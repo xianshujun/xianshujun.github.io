@@ -20,7 +20,7 @@ faders.forEach(function (el) {
 });
 
 // ===== Navbar shadow on scroll =====
-var navbar = document.querySelector(".navbar");
+const navbar = document.querySelector(".navbar");
 window.addEventListener("scroll", function () {
     if (window.scrollY > 10) {
         navbar.classList.add("scrolled");
@@ -30,8 +30,8 @@ window.addEventListener("scroll", function () {
 });
 
 // ===== Language toggle =====
-var currentLang = "zh";
-var langBtn = document.getElementById("lang-toggle");
+let currentLang = "zh";
+const langBtn = document.getElementById("lang-toggle");
 
 if (langBtn) {
     langBtn.addEventListener("click", function () {
