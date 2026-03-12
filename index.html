@@ -1,15 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>xianshujun - Personal Portfolio</title>
     <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
-    <h1>Hello Github Pages</h1>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">@xianshujun</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+            <button id="lang-toggle" class="lang-btn" title="Switch Language">EN / 中</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content fade-in">
+            <p class="hero-greeting" data-zh="👋 你好，我是" data-en="👋 Hi, I'm">👋 你好，我是</p>
+            <h1 class="hero-name">xianshujun</h1>
+            <p class="hero-tagline" data-zh="💻 热爱编程，享受将创意转化为工程化实现的乐趣"
+                data-en="💻 Passionate about coding and engineering ideas into reality">
+                💻 热爱编程，享受将创意转化为工程化实现的乐趣
+            </p>
+            <div class="hero-badges">
+                <span class="badge">C++</span>
+                <span class="badge">Golang</span>
+                <span class="badge">Backend</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <div class="container">
+            <h2 class="section-title" data-zh="关于我" data-en="About Me">关于我</h2>
+            <div class="about-grid">
+                <div class="about-card fade-in">
+                    <div class="card-icon">🏫</div>
+                    <h3 data-zh="教育背景" data-en="Education">教育背景</h3>
+                    <p data-zh="就读于中国211大学，软件工程专业（本科在读）"
+                        data-en="Software Engineering major at a 211 Chinese University (Undergraduate)">
+                        就读于中国211大学，软件工程专业（本科在读）
+                    </p>
+                </div>
+                <div class="about-card fade-in">
+                    <div class="card-icon">🚀</div>
+                    <h3 data-zh="技术栈" data-en="Tech Stack">技术栈</h3>
+                    <p data-zh="以 C++ / Golang 为核心，专注于底层/中间件/B端开发设计与性能优化"
+                        data-en="Primary: C++ / Golang (3+ years), specializing in performance optimization and low-level programming">
+                        以 C++ / Golang 为核心，专注于底层/中间件/B端开发设计与性能优化
+                    </p>
+                </div>
+                <div class="about-card fade-in">
+                    <div class="card-icon">🎯</div>
+                    <h3 data-zh="工作经历" data-en="Experience">工作经历</h3>
+                    <p data-zh="目前正在腾讯 TEG 实习，岗位是后端开发，主要从事 AI 开发相关工作"
+                        data-en="Currently interning at Tencent TEG as a Backend Developer, working on AI development">
+                        目前正在腾讯 TEG 实习，岗位是后端开发，主要从事 AI 开发相关工作
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="section section-alt" id="projects">
+        <div class="container">
+            <h2 class="section-title" data-zh="开源项目" data-en="Projects">开源项目</h2>
+            <div class="projects-grid">
+                <a href="https://github.com/xianshujun/awsome-go-study" target="_blank" rel="noopener noreferrer"
+                    class="project-card fade-in">
+                    <div class="project-header">
+                        <span class="project-icon">📘</span>
+                        <span class="project-lang">Go</span>
+                    </div>
+                    <h3>awsome-go-study</h3>
+                    <p data-zh="Go 语言学习之路 — 记录学习 Go 的笔记与实践"
+                        data-en="Go language learning journey — notes and practice">
+                        Go 语言学习之路 — 记录学习 Go 的笔记与实践
+                    </p>
+                </a>
+                <a href="https://github.com/xianshujun/Filament_Manager" target="_blank" rel="noopener noreferrer"
+                    class="project-card fade-in">
+                    <div class="project-header">
+                        <span class="project-icon">🖨️</span>
+                        <span class="project-lang">3D Printing</span>
+                    </div>
+                    <h3>Filament_Manager</h3>
+                    <p data-zh="3D 打印耗材管理系统" data-en="3D Printing Filament Manager">
+                        3D 打印耗材管理系统
+                    </p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <div class="container">
+            <h2 class="section-title" data-zh="联系我" data-en="Contact">联系我</h2>
+            <div class="contact-links fade-in">
+                <a href="mailto:2776085452@qq.com" class="contact-item">
+                    <span class="contact-icon">📫</span>
+                    <span>2776085452@qq.com</span>
+                </a>
+                <a href="https://github.com/xianshujun" target="_blank" rel="noopener noreferrer"
+                    class="contact-item">
+                    <span class="contact-icon">🐙</span>
+                    <span>github.com/xianshujun</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 xianshujun · Built with ❤️</p>
+    </footer>
+
     <script src="./index.js"></script>
 </body>
 
