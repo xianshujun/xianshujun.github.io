@@ -149,6 +149,34 @@ function App() {
           ease: 'none',
           scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.4, invalidateOnRefresh: true },
         });
+        // 作品：GoStudy 逐字从切口下升上来。裁切窗从下往上打开，与单字上浮同步，收尾清掉裁切。
+        const charMasks = root.current.querySelectorAll('[data-char-mask]');
+        if (charMasks.length) {
+          gsap.timeline({ scrollTrigger: { trigger: '.project-heading', start: 'top 88%', once: true } })
+            .fromTo(charMasks, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.95, ease: 'power4.out', stagger: 0.04, clearProps: 'clipPath' }, 0)
+            .from('[data-char]', { yPercent: 118, duration: 0.95, ease: 'power4.out', stagger: 0.04 }, 0);
+        }
+        // 「43」从 0 数到 43：只在允许动效时跑，默认文案已经是 43。
+        root.current.querySelectorAll('[data-count]').forEach((element) => {
+          const counter = { value: 0 };
+          gsap.to(counter, {
+            value: Number(element.dataset.count), duration: 1.15, ease: 'power2.out', snap: { value: 1 },
+            onUpdate: () => { element.textContent = String(counter.value); },
+            scrollTrigger: { trigger: element, start: 'top 94%', once: true },
+          });
+        });
+        // 作品截图随滚动从上往下擦出来，像图纸一点点印出来。
+        gsap.timeline({ scrollTrigger: { trigger: '.project-figure', start: 'top 86%', end: 'center 62%', scrub: 0.6 } })
+          .from('.screen-frame', { clipPath: 'inset(0% 0% 100% 0%)', ease: 'none' }, 0)
+          .from('.screen-frame img', { scale: 1.035, transformOrigin: 'center top', ease: 'none' }, 0);
+        // 关于：三行依次进入，两栏反向轻移做出层次，署名标记慢慢自转。
+        gsap.from('.about-row', { y: 26, opacity: 0, duration: 0.85, ease: 'power3.out', stagger: 0.12, scrollTrigger: { trigger: '.about-details', start: 'top 88%', once: true } });
+        gsap.to('.about-intro', { y: -16, ease: 'none', scrollTrigger: { trigger: '.about-layout', start: 'top bottom', end: 'bottom top', scrub: 0.7 } });
+        gsap.to('.about-details', { y: 16, ease: 'none', scrollTrigger: { trigger: '.about-layout', start: 'top bottom', end: 'bottom top', scrub: 0.7 } });
+        gsap.to('.signature-cross', { rotate: 360, duration: 24, repeat: -1, ease: 'none' });
+        // 联系：链接逐条自右进入；页脚细线随滚动从中间向两侧铺开，收住整页。
+        gsap.from('.contact-link', { x: 22, opacity: 0, duration: 0.75, ease: 'power3.out', stagger: 0.1, scrollTrigger: { trigger: '.contact-links', start: 'top 88%', once: true } });
+        gsap.from('[data-footer-rule]', { scaleX: 0, transformOrigin: 'center center', ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top 96%', end: 'bottom bottom', scrub: 0.6 } });
         root.current.querySelectorAll('[data-rule]').forEach((line) => {
           gsap.from(line, { scaleX: 0, transformOrigin: 'left center', duration: 1.1, ease: 'power3.inOut', scrollTrigger: { trigger: line, start: 'top 92%', once: true } });
         });
@@ -163,7 +191,11 @@ function App() {
         window.addEventListener('load', refresh, { once: true });
         return () => window.removeEventListener('load', refresh);
       }, root);
-      return () => context.revert();
+      return () => {
+        context.revert();
+        // 计数写的是 textContent，context.revert 管不到；切语言时若正好数到一半，把它拨回终值。
+        root.current?.querySelectorAll('[data-count]').forEach((element) => { element.textContent = element.dataset.count; });
+      };
     });
     return () => media.revert();
   }, [language]);
@@ -220,13 +252,13 @@ function App() {
           <div className="section-rule" data-rule />
           <div className="section-heading" data-reveal><h2 id="projects-title"><span className="micro section-index">01 /</span>{t.selected}</h2><p>{t.selectedSub}</p></div>
           <article className="featured-project">
-            <div className="project-heading" data-reveal><h3>GoStudy<span className="project-dot">.</span></h3><span className="micro project-type">OPEN SOURCE / GO + REACT</span></div>
+            <div className="project-heading" data-reveal><h3 aria-label="GoStudy">{[...'GoStudy'].map((char, index) => <span className="char-mask" data-char-mask key={index} aria-hidden="true"><span data-char>{char}</span></span>)}<span className="char-mask" data-char-mask aria-hidden="true"><span data-char className="project-dot">.</span></span></h3><span className="micro project-type">OPEN SOURCE / GO + REACT</span></div>
             <div className="project-story">
               <MaskedHeading as="p" lines={t.projectTitle} className="project-statement" />
               <div className="project-description" data-reveal><p>{t.projectBody}</p><p className="project-note">{t.projectNote}</p></div>
             </div>
             <div className="project-metrics" data-reveal>
-              <div><strong>43<span className="metric-dot">.</span></strong><span>{t.exercises}</span></div>
+              <div><strong><span data-count="43">43</span><span className="metric-dot">.</span></strong><span>{t.exercises}</span></div>
               <div><strong>{t.offlineValue}</strong><span>{t.offline}</span></div>
               <div><strong>{t.aiValue}</strong><span>{t.ai}</span></div>
               <div className="project-links"><Button asChild className="primary-link"><SpringLink href={LINKS.site}>{t.projectLink}<Arrow /></SpringLink></Button><SpringLink href={LINKS.source} className="text-link">{t.source}<Arrow /></SpringLink></div>
@@ -244,7 +276,7 @@ function App() {
           <div className="about-layout">
             <div className="about-intro"><MaskedHeading lines={t.aboutTitle} className="about-title" /><p data-reveal>{t.aboutLead}</p><div className="about-signature micro" data-reveal><span className="signature-cross">✳</span>GO / BACKEND / SYSTEMS</div></div>
             <dl className="about-details">
-              {[[t.education, t.educationBody, 'EDUCATION'], [t.focus, t.focusBody, 'CRAFT'], [t.now, t.nowBody, 'CURRENTLY']].map(([title, body, label], index) => <div className="about-row" key={label} data-reveal><dt><span className="micro">0{index + 1} / {label}</span><h3>{title}</h3></dt><dd>{body}</dd></div>)}
+              {[[t.education, t.educationBody, 'EDUCATION'], [t.focus, t.focusBody, 'CRAFT'], [t.now, t.nowBody, 'CURRENTLY']].map(([title, body, label], index) => <div className="about-row" key={label}><dt><span className="micro">0{index + 1} / {label}</span><h3>{title}</h3></dt><dd>{body}</dd></div>)}
             </dl>
           </div>
         </section>
@@ -252,14 +284,14 @@ function App() {
         <section id="contact" className="contact section-shell" aria-labelledby="contact-title">
           <div className="section-rule" data-rule />
           <div className="section-heading" data-reveal><h2 id="contact-title"><span className="micro section-index">03 /</span>{t.contact}</h2><span className="micro">LET’S CONNECT</span></div>
-          <div className="contact-layout"><div><MaskedHeading lines={t.contactTitle} className="contact-title" /><p className="contact-description" data-reveal>{t.contactBody}</p></div><div className="contact-links" data-reveal>
-            <SpringLink href={LINKS.email} className="contact-link"><span><span className="micro">{t.emailLabel}</span><span className="contact-value">2776085452@qq.com</span></span><Arrow /></SpringLink>
-            <SpringLink href={LINKS.github} className="contact-link" target="_blank" rel="noopener noreferrer"><span><span className="micro">{t.githubLabel}</span><span className="contact-value">github.com/xianshujun</span></span><Arrow /></SpringLink>
+          <div className="contact-layout"><div><MaskedHeading lines={t.contactTitle} className="contact-title" /><p className="contact-description" data-reveal>{t.contactBody}</p></div><div className="contact-links">
+            <SpringLink href={LINKS.email} className="contact-link"><span><span className="micro">{t.emailLabel}</span><span className="contact-value">2776085452@qq.com</span></span><span className="arrow-swap" aria-hidden="true"><Arrow /><Arrow /></span></SpringLink>
+            <SpringLink href={LINKS.github} className="contact-link" target="_blank" rel="noopener noreferrer"><span><span className="micro">{t.githubLabel}</span><span className="contact-value">github.com/xianshujun</span></span><span className="arrow-swap" aria-hidden="true"><Arrow /><Arrow /></span></SpringLink>
           </div></div>
         </section>
       </main>
 
-      <footer className="footer section-shell"><span className="micro">© 2026 XIANSHUJUN</span><span className="footer-note">{t.footer}</span><SpringLink href="#top" className="micro footer-top">{t.backTop}<Arrow direction="up" /></SpringLink></footer>
+      <footer className="footer section-shell"><span className="footer-rule" data-footer-rule aria-hidden="true" /><span className="micro">© 2026 XIANSHUJUN</span><span className="footer-note">{t.footer}</span><SpringLink href="#top" className="micro footer-top">{t.backTop}<Arrow direction="up" /></SpringLink></footer>
     </div>
   </Theme></MotionConfig>;
 }
