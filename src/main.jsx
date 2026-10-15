@@ -142,6 +142,13 @@ function App() {
           const length = path.getTotalLength();
           hero.fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.3, ease: 'power2.inOut' }, 0.45 + index * 0.14);
         });
+        // 首屏内的箭头随滚动顺时针转一圈：转轴取标记自身的圆心 220 220，滚回顶部时原路退回。
+        gsap.to('.art-strokes', {
+          rotate: 360,
+          svgOrigin: '220 220',
+          ease: 'none',
+          scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.4, invalidateOnRefresh: true },
+        });
         root.current.querySelectorAll('[data-rule]').forEach((line) => {
           gsap.from(line, { scaleX: 0, transformOrigin: 'left center', duration: 1.1, ease: 'power3.inOut', scrollTrigger: { trigger: line, start: 'top 92%', once: true } });
         });
