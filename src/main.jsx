@@ -39,6 +39,7 @@ const copy = {
     contactBody: '关于代码、开源项目，或一个有意思的想法，欢迎联系。',
     emailLabel: '发一封邮件', githubLabel: '在 GitHub 找到我',
     footer: '保持好奇，持续构建。持续学习，持续迭代。', backTop: '回到顶部',
+    theme: '切换深色 / 浅色', toDark: '已切换为深色', toLight: '已切换为浅色',
     language: '选择语言', languageStatus: '已切换为中文',
     meta: 'xianshujun 的个人主页：Go 后端开发，做 Agent 开发与交易服务，开源项目 GoStudy。',
   },
@@ -64,6 +65,7 @@ const copy = {
     contactBody: 'Code, open-source projects, or an interesting idea — feel free to get in touch.',
     emailLabel: 'Send an email', githubLabel: 'Find me on GitHub',
     footer: 'Stay curious. Keep building. Keep learning. Keep iterating.', backTop: 'Back to top',
+    theme: 'Switch dark / light', toDark: 'Switched to dark', toLight: 'Switched to light',
     language: 'Choose language', languageStatus: 'Language changed to English',
     meta: 'xianshujun — Go backend developer working on agent development and trading services, and creator of the open-source GoStudy app.',
   },
@@ -113,6 +115,8 @@ function App() {
     catch { return 'zh'; }
   });
   const [liveStatus, setLiveStatus] = useState('');
+  // 首帧的主题由 index.html 的内联脚本写好，这里只接管后续切换。
+  const [theme, setTheme] = useState(() => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'));
   const root = useRef(null);
   const t = copy[language];
 
@@ -121,6 +125,17 @@ function App() {
     setLiveStatus(copy[next].languageStatus);
     try { localStorage.setItem('homepage-language', next); } catch { /* 无存储权限时仍可切换语言。 */ }
   }
+
+  function changeTheme(next) {
+    setTheme(next);
+    setLiveStatus(copy[language][next === 'dark' ? 'toDark' : 'toLight']);
+    try { localStorage.setItem('homepage-theme', next); } catch { /* 无存储权限时本次会话内仍然生效。 */ }
+  }
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#23262C' : '#F4F4F2');
+  }, [theme]);
 
   useEffect(() => {
     document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
@@ -174,8 +189,15 @@ function App() {
         gsap.to('.about-intro', { y: -16, ease: 'none', scrollTrigger: { trigger: '.about-layout', start: 'top bottom', end: 'bottom top', scrub: 0.7 } });
         gsap.to('.about-details', { y: 16, ease: 'none', scrollTrigger: { trigger: '.about-layout', start: 'top bottom', end: 'bottom top', scrub: 0.7 } });
         gsap.to('.signature-cross', { rotate: 360, duration: 24, repeat: -1, ease: 'none' });
-        // 联系：链接逐条自右进入；页脚细线随滚动从中间向两侧铺开，收住整页。
-        gsap.from('.contact-link', { x: 22, opacity: 0, duration: 0.75, ease: 'power3.out', stagger: 0.1, scrollTrigger: { trigger: '.contact-links', start: 'top 88%', once: true } });
+        // 联系：链接逐条进入；窄屏改成自下而上，横向位移会把 360px 宽的页面顶出滚动条。
+        const contactMedia = gsap.matchMedia();
+        contactMedia.add('(min-width: 701px)', () => {
+          gsap.from('.contact-link', { x: 22, opacity: 0, duration: 0.75, ease: 'power3.out', stagger: 0.1, scrollTrigger: { trigger: '.contact-links', start: 'top 88%', once: true } });
+        });
+        contactMedia.add('(max-width: 700px)', () => {
+          gsap.from('.contact-link', { y: 20, opacity: 0, duration: 0.75, ease: 'power3.out', stagger: 0.1, scrollTrigger: { trigger: '.contact-links', start: 'top 88%', once: true } });
+        });
+        // 页脚细线随滚动从中间向两侧铺开，收住整页。
         gsap.from('[data-footer-rule]', { scaleX: 0, transformOrigin: 'center center', ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top 96%', end: 'bottom bottom', scrub: 0.6 } });
         root.current.querySelectorAll('[data-rule]').forEach((line) => {
           gsap.from(line, { scaleX: 0, transformOrigin: 'left center', duration: 1.1, ease: 'power3.inOut', scrollTrigger: { trigger: line, start: 'top 92%', once: true } });
@@ -189,7 +211,7 @@ function App() {
         const refresh = () => ScrollTrigger.refresh();
         document.fonts.ready.then(refresh);
         window.addEventListener('load', refresh, { once: true });
-        return () => window.removeEventListener('load', refresh);
+        return () => { contactMedia.revert(); window.removeEventListener('load', refresh); };
       }, root);
       return () => {
         context.revert();
@@ -200,7 +222,7 @@ function App() {
     return () => media.revert();
   }, [language]);
 
-  return <MotionConfig reducedMotion="user"><Theme appearance="light" accentColor="grass" grayColor="sand" radius="none" scaling="100%">
+  return <MotionConfig reducedMotion="user"><Theme appearance={theme} accentColor="grass" grayColor="sand" radius="none" scaling="100%">
     <div ref={root} className={`site language-${language}`}>
       <a href="#main" className="skip-link">{t.skip}</a>
       <span className="sr-only" role="status" aria-live="polite">{liveStatus}</span>
@@ -212,6 +234,14 @@ function App() {
           <a href="#contact"><span className="nav-index">03</span>{t.contact}</a>
         </nav>
         <div className="header-tools">
+          <Tooltip content={t.theme}>
+            <Button className="theme-button" variant="ghost" aria-label={t.theme} onClick={() => changeTheme(theme === 'dark' ? 'light' : 'dark')}>
+              <span className="theme-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.4v2.8M12 18.8v2.8M2.4 12h2.8M18.8 12h2.8M5.2 5.2l2 2M16.8 16.8l2 2M18.8 5.2l-2 2M7.2 16.8l-2 2" /></svg>
+                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square"><path d="M20.4 14.4A8.6 8.6 0 0 1 9.6 3.6a8.6 8.6 0 1 0 10.8 10.8Z" /></svg>
+              </span>
+            </Button>
+          </Tooltip>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <Button className="language-button" variant="ghost" aria-label={t.language}>{language === 'zh' ? '中 / EN' : 'EN / 中'}<DropdownMenu.TriggerIcon /></Button>

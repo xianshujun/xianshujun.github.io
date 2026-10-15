@@ -4,7 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="xianshujun 的个人主页：Go 后端开发，做 Agent 开发与交易服务，开源项目 GoStudy。" />
-    <meta name="theme-color" content="#f8f7f4" />
+    <meta name="theme-color" content="#F4F4F2" />
+    <script>
+      // 在首帧之前定好主题，避免先渲染浅色再跳深色。默认跟随系统，用户选过就听用户的。
+      (function () {
+        var theme = 'light';
+        try {
+          var saved = localStorage.getItem('homepage-theme');
+          theme = saved ? (saved === 'dark' ? 'dark' : 'light') : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } catch (error) { /* 无存储权限时按浅色渲染。 */ }
+        document.documentElement.dataset.theme = theme;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'dark' ? '#23262C' : '#F4F4F2');
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <title>xianshujun — 开发与记录</title>
