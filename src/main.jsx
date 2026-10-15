@@ -20,7 +20,7 @@ const copy = {
   zh: {
     skip: '跳到主要内容', work: '作品', about: '关于', contact: '联系', menu: '打开导航',
     greeting: '你好，我是 xianshujun', title: ['把思考，', '写进代码。'],
-    intro: '写 C++ 和 Go，做后端。曾经在腾讯 TEG 做 Agent 开发相关，目前在科大讯飞消费者 CBG，从事软件开发。',
+    intro: '以 Go 为主，做后端、Agent 开发与交易服务相关的工作。',
     seeWork: '看看我的作品', heroNote: '开发 / 学习 / 开源', scroll: '向下，了解更多',
     selected: '精选作品', selectedSub: '从笔记，到真正可以动手的工具。',
     projectTitle: ['学 Go，', '也动手写 Go。'],
@@ -32,20 +32,20 @@ const copy = {
     caption: '不是只读一遍，而是写一遍。', platform: 'Windows / Android / Linux',
     aboutTitle: ['在细节里深耕，', '在实践里学习。'],
     aboutLead: '我的日常，是写代码、理解系统，和把学到的东西做成可以使用的工具。',
-    education: '教育', educationBody: '211 大学软件工程专业，本科在读。',
+    education: '教育', educationBody: '211 大学软件工程专业。',
     focus: '在写什么', focusBody: 'Go 为主，交易服务，B端/C端开发，Agent 开发相关。',
     now: '最近', nowBody: '在科大讯飞消费者 CBG 从事软件开发，此前在腾讯 TEG 做 Agent 开发相关。',
     contactTitle: ['好的交流，', '从一句你好开始。'],
     contactBody: '关于代码、开源项目，或一个有意思的想法，欢迎联系。',
     emailLabel: '发一封邮件', githubLabel: '在 GitHub 找到我',
-    footer: '保持好奇，继续构建。', backTop: '回到顶部',
+    footer: '保持好奇，持续构建。持续学习，持续迭代。', backTop: '回到顶部',
     language: '选择语言', languageStatus: '已切换为中文',
-    meta: 'xianshujun 的个人主页：C++ / Go 软件开发，曾做 Agent 开发，开源项目 GoStudy。',
+    meta: 'xianshujun 的个人主页：Go 后端开发，做 Agent 开发与交易服务，开源项目 GoStudy。',
   },
   en: {
     skip: 'Skip to main content', work: 'Work', about: 'About', contact: 'Contact', menu: 'Open navigation',
     greeting: "Hello, I’m xianshujun", title: ['Thoughtfully', 'built in code.'],
-    intro: 'I write C++ and Go, mostly backend. Previously did agent development at Tencent TEG; now doing software development at iFLYTEK Consumer BG.',
+    intro: 'I work mostly in Go on the backend — agent development and trading services.',
     seeWork: 'Explore my work', heroNote: 'DEVELOP / LEARN / OPEN SOURCE', scroll: 'SCROLL TO EXPLORE',
     selected: 'Selected work', selectedSub: 'From notes to something you can actually use.',
     projectTitle: ['Learn Go.', 'Write Go.'],
@@ -57,15 +57,15 @@ const copy = {
     caption: 'Go beyond reading. Start writing.', platform: 'Windows / Android / Linux',
     aboutTitle: ['Into the details.', 'Learning by doing.'],
     aboutLead: 'My everyday practice: writing code, understanding systems, and turning what I learn into useful tools.',
-    education: 'Education', educationBody: 'Software Engineering at a 211 university (undergraduate).',
+    education: 'Education', educationBody: 'Software Engineering at a 211 university.',
     focus: 'What I work on', focusBody: 'Mostly Go — trading services, B2B/B2C development, and agent development.',
     now: 'Now', nowBody: 'Software development at iFLYTEK Consumer BG; previously agent development at Tencent TEG.',
     contactTitle: ['A good conversation', 'starts with hello.'],
     contactBody: 'Code, open-source projects, or an interesting idea — feel free to get in touch.',
     emailLabel: 'Send an email', githubLabel: 'Find me on GitHub',
-    footer: 'Stay curious. Keep building.', backTop: 'Back to top',
+    footer: 'Stay curious. Keep building. Keep learning. Keep iterating.', backTop: 'Back to top',
     language: 'Choose language', languageStatus: 'Language changed to English',
-    meta: 'xianshujun — software developer working in C++ and Go, and creator of the open-source GoStudy app.',
+    meta: 'xianshujun — Go backend developer working on agent development and trading services, and creator of the open-source GoStudy app.',
   },
 };
 
@@ -203,7 +203,7 @@ function App() {
               <Button asChild className="primary-link"><SpringLink href="#projects">{t.seeWork}<Arrow direction="down" /></SpringLink></Button>
               <Tooltip content={language === 'zh' ? '查看 GitHub 主页' : 'Visit my GitHub profile'}><SpringLink href={LINKS.github} className="text-link">GitHub<Arrow /></SpringLink></Tooltip>
             </div>
-            <p className="hero-tech micro" data-hero-detail><span>C++</span><span>GO</span><span>BACKEND</span></p>
+            <p className="hero-tech micro" data-hero-detail><span>GO</span><span>BACKEND</span><span>AGENT</span><span>TRADE</span></p>
           </div>
           <Monogram />
           <div className="hero-bottom micro" data-hero-detail><span>{t.heroNote}</span><a href="#projects">{t.scroll}<Arrow direction="down" /></a></div>
@@ -235,7 +235,7 @@ function App() {
           <div className="section-rule" data-rule />
           <div className="section-heading" data-reveal><h2 id="about-title"><span className="micro section-index">02 /</span>{t.about}</h2><span className="micro">A LITTLE CONTEXT</span></div>
           <div className="about-layout">
-            <div className="about-intro"><MaskedHeading lines={t.aboutTitle} className="about-title" /><p data-reveal>{t.aboutLead}</p><div className="about-signature micro" data-reveal><span className="signature-cross">✳</span>C++ / GO / SYSTEMS</div></div>
+            <div className="about-intro"><MaskedHeading lines={t.aboutTitle} className="about-title" /><p data-reveal>{t.aboutLead}</p><div className="about-signature micro" data-reveal><span className="signature-cross">✳</span>GO / BACKEND / SYSTEMS</div></div>
             <dl className="about-details">
               {[[t.education, t.educationBody, 'EDUCATION'], [t.focus, t.focusBody, 'CRAFT'], [t.now, t.nowBody, 'CURRENTLY']].map(([title, body, label], index) => <div className="about-row" key={label} data-reveal><dt><span className="micro">0{index + 1} / {label}</span><h3>{title}</h3></dt><dd>{body}</dd></div>)}
             </dl>
