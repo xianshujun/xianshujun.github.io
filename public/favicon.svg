@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!-- 跟随系统深浅色：浅色用烧橙、深色用电光绿，与站点两套主题的强调色一致。 -->
   <style>
-    :root { --bg: #f4f4f2; --fg: #b03d0b; }
+    :root { --bg: #f8f7f4; --fg: #d97757; }
     @media (prefers-color-scheme: dark) { :root { --bg: #23262c; --fg: #b1fa63; } }
     .bg { fill: var(--bg); }
     .fg { stroke: var(--fg); }
