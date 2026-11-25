@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '@radix-ui/themes/styles.css';
 import './styles.css';
+import OssSection from './OssSection';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,8 +19,8 @@ const LINKS = {
 
 const copy = {
   zh: {
-    skip: '跳到主要内容', work: '作品', about: '关于', contact: '联系', menu: '打开导航',
-    greeting: '你好，我是 xianshujun', title: ['把思考，', '写进代码。'],
+    skip: '跳到主要内容', work: '作品', oss: '开源', about: '关于', contact: '联系', menu: '打开导航',
+    greeting: '你好，我是 xianshujun', title: ['把思考，', '写进代码。'], avatarAlt: 'xianshujun 的头像',
     intro: '以 Go 为主，做后端、Agent 开发与交易服务相关的工作。',
     seeWork: '看看我的作品', heroNote: '开发 / 学习 / 开源', scroll: '向下，了解更多',
     selected: '精选作品', selectedSub: '从笔记，到真正可以动手的工具。',
@@ -44,8 +45,8 @@ const copy = {
     meta: 'xianshujun 的个人主页：Go 后端开发，做 Agent 开发与交易服务，开源项目 GoStudy。',
   },
   en: {
-    skip: 'Skip to main content', work: 'Work', about: 'About', contact: 'Contact', menu: 'Open navigation',
-    greeting: "Hello, I’m xianshujun", title: ['Thoughtfully', 'built in code.'],
+    skip: 'Skip to main content', work: 'Work', oss: 'Open source', about: 'About', contact: 'Contact', menu: 'Open navigation',
+    greeting: "Hello, I’m xianshujun", title: ['Thoughtfully', 'built in code.'], avatarAlt: 'Portrait of xianshujun',
     intro: 'I work mostly in Go on the backend — agent development and trading services.',
     seeWork: 'Explore my work', heroNote: 'DEVELOP / LEARN / OPEN SOURCE', scroll: 'SCROLL TO EXPLORE',
     selected: 'Selected work', selectedSub: 'From notes to something you can actually use.',
@@ -230,8 +231,9 @@ function App() {
         <a className="brand" href="#top" aria-label="xianshujun"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="m5 5 18 18M23 5 5 23M17 5h6v6M5 17v6h6" /></svg><span>xianshujun<span className="brand-period">.</span></span></a>
         <nav className="desktop-nav" aria-label={language === 'zh' ? '主导航' : 'Main navigation'}>
           <a href="#projects"><span className="nav-index">01</span>{t.work}</a>
-          <a href="#about"><span className="nav-index">02</span>{t.about}</a>
-          <a href="#contact"><span className="nav-index">03</span>{t.contact}</a>
+          <a href="#opensource"><span className="nav-index">02</span>{t.oss}</a>
+          <a href="#about"><span className="nav-index">03</span>{t.about}</a>
+          <a href="#contact"><span className="nav-index">04</span>{t.contact}</a>
         </nav>
         <div className="header-tools">
           <Tooltip content={t.theme}>
@@ -256,7 +258,7 @@ function App() {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger><Button variant="ghost" className="mobile-menu" aria-label={t.menu}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" fill="none" /></svg></Button></DropdownMenu.Trigger>
             <DropdownMenu.Content align="end" className="site-dropdown">
-              {[['#projects', t.work], ['#about', t.about], ['#contact', t.contact]].map(([href, label]) => <DropdownMenu.Item asChild key={href}><a href={href}>{label}</a></DropdownMenu.Item>)}
+              {[['#projects', t.work], ['#opensource', t.oss], ['#about', t.about], ['#contact', t.contact]].map(([href, label]) => <DropdownMenu.Item asChild key={href}><a href={href}>{label}</a></DropdownMenu.Item>)}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </div>
@@ -265,6 +267,15 @@ function App() {
       <main id="main" tabIndex={-1}>
         <section id="top" className="hero section-shell" aria-labelledby="hero-title">
           <div className="hero-copy">
+            <figure className="hero-portrait" data-hero-intro>
+              <span className="portrait-window">
+                <picture>
+                  <source srcSet="/images/avatar.webp" type="image/webp" />
+                  <img src="/images/avatar.png" width="320" height="320" alt={t.avatarAlt} />
+                </picture>
+              </span>
+              <figcaption className="micro"><span>FIG. 00</span><span>PORTRAIT — 2026</span></figcaption>
+            </figure>
             <p className="eyebrow micro" data-hero-intro><span className="status-dot" />{t.greeting}</p>
             <MaskedHeading id="hero-title" as="h1" lines={t.title} className="hero-title" hero />
             <p className="hero-description" data-hero-detail>{t.intro}</p>
@@ -300,9 +311,11 @@ function App() {
           </article>
         </section>
 
+        <OssSection language={language} />
+
         <section id="about" className="about section-shell" aria-labelledby="about-title">
           <div className="section-rule" data-rule />
-          <div className="section-heading" data-reveal><h2 id="about-title"><span className="micro section-index">02 /</span>{t.about}</h2><span className="micro">A LITTLE CONTEXT</span></div>
+          <div className="section-heading" data-reveal><h2 id="about-title"><span className="micro section-index">03 /</span>{t.about}</h2><span className="micro">A LITTLE CONTEXT</span></div>
           <div className="about-layout">
             <div className="about-intro"><MaskedHeading lines={t.aboutTitle} className="about-title" /><p data-reveal>{t.aboutLead}</p><div className="about-signature micro" data-reveal><span className="signature-cross">✳</span>GO / BACKEND / SYSTEMS</div></div>
             <dl className="about-details">
@@ -313,7 +326,7 @@ function App() {
 
         <section id="contact" className="contact section-shell" aria-labelledby="contact-title">
           <div className="section-rule" data-rule />
-          <div className="section-heading" data-reveal><h2 id="contact-title"><span className="micro section-index">03 /</span>{t.contact}</h2><span className="micro">LET’S CONNECT</span></div>
+          <div className="section-heading" data-reveal><h2 id="contact-title"><span className="micro section-index">04 /</span>{t.contact}</h2><span className="micro">LET’S CONNECT</span></div>
           <div className="contact-layout"><div><MaskedHeading lines={t.contactTitle} className="contact-title" /><p className="contact-description" data-reveal>{t.contactBody}</p></div><div className="contact-links">
             <SpringLink href={LINKS.email} className="contact-link"><span><span className="micro">{t.emailLabel}</span><span className="contact-value">2776085452@qq.com</span></span><span className="arrow-swap" aria-hidden="true"><Arrow /><Arrow /></span></SpringLink>
             <SpringLink href={LINKS.github} className="contact-link" target="_blank" rel="noopener noreferrer"><span><span className="micro">{t.githubLabel}</span><span className="contact-value">github.com/xianshujun</span></span><span className="arrow-swap" aria-hidden="true"><Arrow /><Arrow /></span></SpringLink>
