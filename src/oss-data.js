@@ -92,6 +92,7 @@ export const OSS_COPY = {
     statusCached: '缓存',
     statusSnapshot: '快照',
     offlineNote: '实时接口暂不可用，展示最近缓存或快照',
+    refreshFailed: '刷新失败，展示上次成功同步的数据',
     refreshed: '已刷新',
   },
   en: {
@@ -114,6 +115,7 @@ export const OSS_COPY = {
     statusCached: 'Cached',
     statusSnapshot: 'Snapshot',
     offlineNote: 'Live API unavailable — showing the latest cached snapshot',
+    refreshFailed: 'Refresh failed — showing the last successful sync',
     refreshed: 'Refreshed',
   },
 };
@@ -249,6 +251,7 @@ export function buildOssState(payload) {
 async function fetchKind(type, signal) {
   const items = [];
   let totalCount = 0;
+  let incomplete = false;
 
   for (let page = 1; page <= 3; page += 1) {
     const base = `${SEARCH_API}?q=author:${GITHUB_USER}+type:${type}+-user:${GITHUB_USER}&per_page=${PER_PAGE}&sort=updated`;
@@ -262,24 +265,36 @@ async function fetchKind(type, signal) {
 
     const data = await response.json();
     if (page === 1) totalCount = Number.isFinite(data.total_count) ? data.total_count : 0;
+    if (data.incomplete_results) incomplete = true;
     const batch = Array.isArray(data.items) ? data.items : [];
     items.push(...batch);
 
     if (items.length >= totalCount || batch.length === 0) break;
   }
 
-  return { items, totalCount, truncated: items.length < totalCount };
+  return { items, totalCount, truncated: items.length < totalCount || incomplete };
 }
 
 export async function fetchOssStats(signal) {
-  // 给请求一个上限，弱网时不让状态一直停在「正在同步」。
-  const timeout = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(15000) : null;
-  const bounded = timeout && AbortSignal.any && signal ? AbortSignal.any([signal, timeout]) : signal;
-  const [pr, issues] = await Promise.all([
-    fetchKind('pr', bounded),
-    fetchKind('issue', bounded),
-  ]);
-  return buildOssState({ pr, issues });
+  // 15 秒上限：内部 controller 同时响应外部取消；超时只中止内部请求，不把外部 controller 标成 aborted。
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const target = controller ? controller.signal : signal;
+  const timer = controller ? setTimeout(() => controller.abort(), 15000) : null;
+  const forwardAbort = () => { if (controller) controller.abort(); };
+  if (controller && signal) {
+    if (signal.aborted) controller.abort();
+    else signal.addEventListener('abort', forwardAbort, { once: true });
+  }
+  try {
+    const [pr, issues] = await Promise.all([
+      fetchKind('pr', target),
+      fetchKind('issue', target),
+    ]);
+    return buildOssState({ pr, issues });
+  } finally {
+    if (timer) clearTimeout(timer);
+    if (controller && signal) signal.removeEventListener('abort', forwardAbort);
+  }
 }
 
 export function loadCachedOss() {

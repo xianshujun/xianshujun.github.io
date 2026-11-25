@@ -119,6 +119,7 @@ function App() {
   // 首帧的主题由 index.html 的内联脚本写好，这里只接管后续切换。
   const [theme, setTheme] = useState(() => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'));
   const root = useRef(null);
+  const menuTarget = useRef(null);
   const t = copy[language];
 
   function changeLanguage(next) {
@@ -143,6 +144,29 @@ function App() {
     document.title = language === 'zh' ? 'xianshujun — 开发与记录' : 'xianshujun — Thoughtfully built';
     document.querySelector('meta[name="description"]').setAttribute('content', t.meta);
   }, [language, t.meta]);
+
+  useEffect(() => {
+    // 静态站按 hash 直达时，React 渲染晚于浏览器处理 fragment；等资源与字体就绪后再补滚动，
+    // 避免被 ScrollTrigger 初始化时的 scrollTo(0, 0) 顶回顶部。
+    const id = window.location.hash.slice(1);
+    if (!id) return undefined;
+    let cancelled = false;
+    const scroll = () => {
+      if (cancelled) return;
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: 'auto' });
+    };
+    const afterLoad = () => {
+      if (document.fonts?.ready) document.fonts.ready.then(() => window.requestAnimationFrame(scroll));
+      else window.requestAnimationFrame(scroll);
+    };
+    if (document.readyState === 'complete') afterLoad();
+    else window.addEventListener('load', afterLoad, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener('load', afterLoad);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     // 默认样式保持可见，只有允许动效时才设置起点；切换语言或动效偏好时完整清理。
@@ -257,8 +281,34 @@ function App() {
           </DropdownMenu.Root>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger><Button variant="ghost" className="mobile-menu" aria-label={t.menu}><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" fill="none" /></svg></Button></DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end" className="site-dropdown">
-              {[['#projects', t.work], ['#opensource', t.oss], ['#about', t.about], ['#contact', t.contact]].map(([href, label]) => <DropdownMenu.Item asChild key={href}><a href={href}>{label}</a></DropdownMenu.Item>)}
+            <DropdownMenu.Content
+              align="end"
+              className="site-dropdown"
+              onCloseAutoFocus={(event) => {
+                // 默认会把焦点还给菜单按钮并滚回顶部；改为落到刚选中的区块。
+                event.preventDefault();
+                const target = menuTarget.current;
+                menuTarget.current = null;
+                if (!target) return;
+                target.setAttribute('tabindex', '-1');
+                target.focus({ preventScroll: true });
+              }}
+            >
+              {[['#projects', t.work], ['#opensource', t.oss], ['#about', t.about], ['#contact', t.contact]].map(([href, label]) => (
+                <DropdownMenu.Item asChild key={href}>
+                  <a
+                    href={href}
+                    onClick={() => {
+                      const target = document.getElementById(href.slice(1));
+                      if (!target) return;
+                      menuTarget.current = target;
+                      window.requestAnimationFrame(() => target.scrollIntoView());
+                    }}
+                  >
+                    {label}
+                  </a>
+                </DropdownMenu.Item>
+              ))}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </div>

@@ -58,8 +58,8 @@
 .oss-foot-copy { max-width: 640px; color: var(--muted); }
 .oss-foot-warn { margin-top: 6px; color: var(--muted); }
 .oss-refresh { display: inline-flex; align-items: center; gap: 10px; flex: none; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); cursor: pointer; transition: border-color 180ms ease, color 180ms ease; }
-.oss-refresh:hover:not(:disabled), .oss-refresh:focus-visible { border-color: var(--accent); color: var(--accent); }
-.oss-refresh:disabled { cursor: default; opacity: 0.55; }
+.oss-refresh:hover:not([aria-disabled='true']), .oss-refresh:focus-visible { border-color: var(--accent); color: var(--accent); }
+.oss-refresh[aria-disabled='true'] { cursor: default; opacity: 0.55; }
 .oss-refresh svg { flex: none; }
 .oss-refresh .is-spinning { animation: oss-spin 900ms linear infinite; }
 

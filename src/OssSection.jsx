@@ -59,7 +59,7 @@ export default function OssSection({ language }) {
   const languageRef = useRef(lang);
   languageRef.current = lang;
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (announce = false) => {
     if (inFlightRef.current) return;
     const controller = new AbortController();
     abortRef.current = controller;
@@ -75,11 +75,12 @@ export default function OssSection({ language }) {
       setStatus('live');
       setFailed(false);
       saveCachedOss(next);
-      setAnnouncement((OSS_COPY[languageRef.current] || OSS_COPY.zh).refreshed);
+      if (announce) setAnnouncement((OSS_COPY[languageRef.current] || OSS_COPY.zh).refreshed);
     } catch {
       if (controller.signal.aborted) return;
       setFailed(true);
       setStatus(liveRef.current ? 'live' : cacheRef.current ? 'cached' : 'fallback');
+      if (announce) setAnnouncement((OSS_COPY[languageRef.current] || OSS_COPY.zh).refreshFailed);
     } finally {
       if (!controller.signal.aborted) {
         setBusy(false);
@@ -90,8 +91,8 @@ export default function OssSection({ language }) {
   }, []);
 
   useEffect(() => {
-    load();
-    const timer = window.setInterval(load, REFRESH_INTERVAL);
+    load(false);
+    const timer = window.setInterval(() => load(false), REFRESH_INTERVAL);
     return () => {
       window.clearInterval(timer);
       if (abortRef.current) {
@@ -280,13 +281,13 @@ export default function OssSection({ language }) {
         <div className="oss-foot-copy">
           <p className="micro">{t.note}</p>
           {data.truncated && <p className="micro oss-foot-warn">{t.truncatedNote}</p>}
-          {failed && status !== 'live' && <p className="micro oss-foot-warn">{t.offlineNote}</p>}
+          {failed && <p className="micro oss-foot-warn">{status === 'live' ? t.refreshFailed : t.offlineNote}</p>}
         </div>
         <button
           type="button"
           className="oss-refresh micro"
-          onClick={load}
-          disabled={busy}
+          onClick={() => load(true)}
+          aria-disabled={busy}
           aria-busy={busy}
         >
           <svg className={busy ? 'is-spinning' : ''} width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
